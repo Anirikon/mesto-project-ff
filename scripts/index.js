@@ -2,9 +2,7 @@ const log = console.log;
 
 // @todo: Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
-const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
-const cardImage = cardElement.querySelector('.card__image');
-const cardTitle = cardElement.querySelector('.card__title');
+
 
 // @todo: DOM узлы
 const cardButton = document.querySelector("body > div > main > section.profile.page__section > button");
@@ -34,6 +32,9 @@ function deleteCard () {
 
 // @todo: Вывести карточки на страницу
 function placeCards (obj) {
+    const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
+    const cardImage = cardElement.querySelector('.card__image');
+    const cardTitle = cardElement.querySelector('.card__title');
         cardImage.src = obj.link;
         cardTitle.textContent = obj.name;
         cardList.append(cardElement);

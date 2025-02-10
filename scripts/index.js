@@ -20,7 +20,7 @@ function placeCards(obj) {
         cardImage.src = obj.link;
         cardTitle.textContent = obj.name;
         cardList.append(cardElement);
-    let deleteButton = cardList.querySelectorAll('.card__delete-button');
+    const deleteButton = cardList.querySelectorAll('.card__delete-button');
     deleteButton.forEach((elem) => {
         elem.addEventListener('click', deleteCard);
     });  
@@ -39,7 +39,7 @@ function closePopup() {
 
 // @todo: Функция удаления карточки
 function deleteCard() {
-    let card = this.parentElement;
+    const card = this.parentElement;
     card.remove();
 }
 
@@ -53,7 +53,7 @@ function renderCardsFromArray() {
 }
 
 function renderNewCard() {
-    let cardsArrayLength = newInitialCards.length - 1;
+    const cardsArrayLength = newInitialCards.length - 1;
     placeCards(newInitialCards[cardsArrayLength]);
 }
 

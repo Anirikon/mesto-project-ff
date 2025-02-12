@@ -2,7 +2,6 @@
 const cardTemplate = document.querySelector('#card-template').content;
 
 // @todo: DOM узлы
-
 const cardList = document.querySelector('.places__list');
 const popupImage = document.querySelector('.popup__content_content_image');
 const popupCardImage = popupImage.querySelector('.popup__image');

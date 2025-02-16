@@ -26,15 +26,25 @@ const initialCards = [
 ];
 
 // @todo: Функция создания карточки
-function createCard(cardData) {
+function createCard(cardData, like, openModalImage) {
+  console.log(cardData)
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
       cardImage.src = cardData.link;
       cardTitle.textContent = cardData.name;
+      cardImage.alt = cardData.name;
+
       const deleteButton = cardElement.querySelector('.card__delete-button');
           deleteButton.addEventListener('click', deleteCard);
+
+      const likeButton = cardElement.querySelector('.card__like-button');
+      likeButton.addEventListener("click", like)
+
+      cardImage.addEventListener("click", openModalImage)
+
   return cardElement;
+  
 }
 
 // @todo: Функция удаления карточки
@@ -42,8 +52,20 @@ function deleteCard(event) {
   event.target.closest(".card").remove(); 
 };
 
-// @todo: Обработчик лайка
+// @todo: Функция обработчика лайка
+
+export function like( {target} ) {
+  target.classList.toggle('card__like-button_is-active');
+}
+
+export function openModalImage( {target, currentTarget} ) {
+    openModal(popupTypeImage)
+    console.log(target)
+    popupImage.src = target.src;
+    popupImageCaption.textContent = target.alt;
+}
 
 // @todo: Экспорт функций
 export { initialCards, createCard, deleteCard }
-import { cardTemplate } from "./index.js";
+import { cardTemplate, popupTypeImage, popupImage, popupImageCaption } from "./index.js"; 
+import { openModal } from "./modal.js";

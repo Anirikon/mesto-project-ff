@@ -17,4 +17,3 @@ export function closePopupOnBackground( {currentTarget, target} ) {
     }
     // event.target.closest(".popup_is-opened").remove();
   };
-

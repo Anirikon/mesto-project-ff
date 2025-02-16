@@ -27,7 +27,6 @@ const initialCards = [
 
 // @todo: Функция создания карточки
 function createCard(cardData, like, openModalImage) {
-  console.log(cardData)
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
   const cardImage = cardElement.querySelector('.card__image');
   const cardTitle = cardElement.querySelector('.card__title');
@@ -61,7 +60,6 @@ function like( {target} ) {
 // Функция открытия модального окна картинки
 function openModalImage( {target, currentTarget} ) {
     openModal(popupTypeImage)
-    console.log(target)
     popupImage.src = target.src;
     popupImageCaption.textContent = target.alt;
 }

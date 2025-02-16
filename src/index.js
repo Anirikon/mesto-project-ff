@@ -1,3 +1,4 @@
+import './pages/index.css';
 import { initialCards, createCard, like, openModalImage } from './cards.js'
 import { openModal, closeModal, closePopupOnBackground } from './modal.js'
 

@@ -1,5 +1,5 @@
 // @todo: Функция открытия модального окна
-export function openModal( elem ) {
+export function openModal(elem) {
     elem.classList.add('popup_is-opened')
 }
 
@@ -11,7 +11,7 @@ export function closeModal(elem) {
 export function closePopupOnBackground( {currentTarget, target} ) {
     const popup = currentTarget
     const isClickedOnBackground = target === popup
-    if (isClickedOnBackground) {
-        popup.classList.remove('popup_is-opened')
-    }
-  }
+        if (isClickedOnBackground) {
+            popup.classList.remove('popup_is-opened')
+        }
+}

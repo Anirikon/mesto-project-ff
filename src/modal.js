@@ -1,5 +1,5 @@
 // @todo: Функция открытия модального окна
-export function openModal(elem) {
+export function openModal( elem ) {
     elem.classList.add('popup_is-opened')
 }
 

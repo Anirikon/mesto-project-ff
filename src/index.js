@@ -1,11 +1,12 @@
+// Импорт/экспорт
 import './pages/index.css';
 import { initialCards, createCard, like, openModalImage } from './cards.js'
 import { openModal, closeModal, closePopupOnBackground } from './modal.js'
 
-// @todo: Темплейт карточки
+// Темплейт карточки
 export const cardTemplate = document.querySelector('#card-template').content
 
-// @todo: DOM узлы
+// DOM узлы
 const popupCard = document.querySelector('.popup_type_new-card')
 const profileAddButton = document.querySelector('.profile__add-button')
 const closePopupButton = popupCard.querySelector('.popup__close')
@@ -29,13 +30,31 @@ const profileFormElement = popupProfile.querySelector('.popup__form')
 const nameProfileInput = popupProfile.querySelector('.popup__input_type_name')
 const jobProfileInput = popupProfile.querySelector('.popup__input_type_description');
 
-// @todo: Вывести карточки на страницу
-initialCards.forEach((cardData) => {
-    const cardElement = createCard(cardData, like, openModalImage)
-        cardList.append(cardElement)
-})
+// Функции
+function resetForm(form) {
+    form.reset()
+}
 
-// @todo: Обработчики событий для открытия/закрытия попапов
+function handleProfileFormSubmit(event) {
+    event.preventDefault()
+        const nameInputValue = nameProfileInput.value
+        const jobInputValue = jobProfileInput.value
+            profileTitle.textContent = nameInputValue
+            profileDescription.textContent = jobInputValue
+                closeModal(popupProfile)
+}
+
+function handleNewPlaceFormSubmit(event) {
+    event.preventDefault()
+        const cardData = {name: placeName.value, link: link.value,} 
+        initialCards.unshift(cardData)
+            const cardElement = createCard(cardData, like, openModalImage)
+            cardList.prepend(cardElement)
+                closeModal(popupCard)
+                resetForm(newPlaceFormElement)
+}
+
+// Обработчики событий
 profileAddButton.addEventListener('click', function() {
     openModal(popupCard)
 })
@@ -88,29 +107,12 @@ document.addEventListener('keydown', function(event) {
     }
 })
 
-function resetForm(form) {
-    form.reset()
-}
-
-function handleProfileFormSubmit(event) {
-    event.preventDefault()
-        const nameInputValue = nameProfileInput.value
-        const jobInputValue = jobProfileInput.value
-            profileTitle.textContent = nameInputValue
-            profileDescription.textContent = jobInputValue
-                closeModal(popupProfile)
-}
-
 profileFormElement.addEventListener('submit', handleProfileFormSubmit); 
 
-function handleNewPlaceFormSubmit(event) {
-    event.preventDefault()
-        const cardData = {name: placeName.value, link: link.value,} 
-        initialCards.unshift(cardData)
-            const cardElement = createCard(cardData, like, openModalImage)
-            cardList.prepend(cardElement)
-                closeModal(popupCard)
-                resetForm(newPlaceFormElement)
-}
-
 newPlaceFormElement.addEventListener('submit', handleNewPlaceFormSubmit)
+
+// Вывод карточек на страницу
+initialCards.forEach((cardData) => {
+    const cardElement = createCard(cardData, like, openModalImage)
+        cardList.append(cardElement)
+})

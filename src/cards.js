@@ -1,3 +1,9 @@
+// Импорт/экспорт
+export { initialCards, createCard, deleteCard, like, openModalImage }
+import { cardTemplate, popupTypeImage, popupImage, popupImageCaption } from "./index.js"; 
+import { openModal } from "./modal.js";
+
+// Переменные
 const initialCards = [
     {
       name: "Архыз",
@@ -69,8 +75,3 @@ function openModalImage( {target} ) {
       popupImage.src = target.src;
       popupImageCaption.textContent = target.alt;
 }
-
-// @todo: Экспорт функций
-export { initialCards, createCard, deleteCard, like, openModalImage }
-import { cardTemplate, popupTypeImage, popupImage, popupImageCaption } from "./index.js"; 
-import { openModal } from "./modal.js";

@@ -1,7 +1,7 @@
 // Импорт/экспорт
 import './pages/index.css';
 import { initialCards, createCard, like, openModalImage } from './cards.js'
-import { openModal, closeModal, closePopupOnBackground } from './modal.js'
+import { openModal, closeModal, closePopupOnBackground, closePopupByEsc } from './modal.js'
 
 // Темплейт карточки
 export const cardTemplate = document.querySelector('#card-template').content
@@ -69,12 +69,6 @@ closePopupButton.addEventListener('click', function() {
 
 popupCard.addEventListener('click', closePopupOnBackground)
 
-document.addEventListener('keydown', function(event) {
-    if(event.code == 'Escape') {
-        closeModal(popupCard)
-    }
-})
-
 popupProfileEditButton.addEventListener('click', function() {
     openModal(popupProfile)
 })
@@ -89,23 +83,12 @@ popupProfileCloseButton.addEventListener('click', function() {
 
 popupProfile.addEventListener('click', closePopupOnBackground)
 
-document.addEventListener("keydown", function(event) {
-    if(event.code == 'Escape') {
-        closeModal(popupProfile)
-    }
-})
-
 popupImageCloseButton.addEventListener('click', function() {
     closeModal(popupTypeImage)
 })
 
 popupTypeImage.addEventListener('click', closePopupOnBackground)
 
-document.addEventListener('keydown', function(event) {
-    if(event.code == 'Escape') {
-        closeModal(popupTypeImage)
-    }
-})
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit); 
 

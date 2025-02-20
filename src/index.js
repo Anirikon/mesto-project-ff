@@ -1,10 +1,8 @@
 // Импорт/экспорт
 import './pages/index.css';
-import { initialCards, createCard, like, openModalImage } from './cards.js'
-import { openModal, closeModal, closePopupOnBackground, closePopupByEsc } from './modal.js'
-
-// Темплейт карточки
-export const cardTemplate = document.querySelector('#card-template').content
+import { initialCards } from './cards.js'
+import { openModal, closeModal, closePopupOnBackground } from './modal.js'
+import { createCard, like } from "./card.js"
 
 // DOM узлы
 const popups = document.querySelectorAll('.popup')
@@ -21,10 +19,6 @@ const popupProfile = document.querySelector('.popup_type_edit')
 const popupProfileCloseButton = popupProfile.querySelector('.popup__close')
 
 const cardList = document.querySelector('.places__list')
-export const popupTypeImage = document.querySelector('.popup_type_image')
-export const popupImage = popupTypeImage.querySelector('.popup__image')
-export const popupImageCaption = popupTypeImage.querySelector('.popup__caption')
-const popupImageCloseButton = popupTypeImage.querySelector('.popup__close')
 
 const profileTitle = document.querySelector('.profile__title')
 const profileDescription = document.querySelector('.profile__description')
@@ -33,6 +27,21 @@ const nameProfileInput = popupProfile.querySelector('.popup__input_type_name')
 const jobProfileInput = popupProfile.querySelector('.popup__input_type_description');
 
 // Функции
+// Функция открытия модального окна картинки
+function openModalImage( {target} ) {
+    const popupTypeImage = document.querySelector('.popup_type_image')
+    const popupImage = popupTypeImage.querySelector('.popup__image')
+    const popupImageCaption = popupTypeImage.querySelector('.popup__caption')
+    const popupImageCloseButton = popupTypeImage.querySelector('.popup__close')
+    openModal(popupTypeImage)
+      popupImage.src = target.src;
+      popupImageCaption.textContent = target.alt;
+      popupTypeImage.addEventListener('click', closePopupOnBackground)
+      popupImageCloseButton.addEventListener('click', function() {
+        closeModal(popupTypeImage)
+    })
+}
+
 function resetForm(form) {
     form.reset()
 }
@@ -81,11 +90,6 @@ popupProfileCloseButton.addEventListener('click', function() {
 
 popupProfile.addEventListener('click', closePopupOnBackground)
 
-popupImageCloseButton.addEventListener('click', function() {
-    closeModal(popupTypeImage)
-})
-
-popupTypeImage.addEventListener('click', closePopupOnBackground)
 
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit); 

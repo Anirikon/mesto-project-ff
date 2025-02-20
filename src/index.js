@@ -68,6 +68,10 @@ closePopupButton.addEventListener('click', function() {
 popupCard.addEventListener('click', closePopupOnBackground)
 
 popupProfileEditButton.addEventListener('click', function() {
+    const nameElementValue = profileTitle.textContent
+    const jobElementValue = profileDescription.textContent
+        nameProfileInput.value = nameElementValue
+        jobProfileInput.value = jobElementValue
     openModal(popupProfile)
 })
 

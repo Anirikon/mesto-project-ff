@@ -7,6 +7,8 @@ import { openModal, closeModal, closePopupOnBackground, closePopupByEsc } from '
 export const cardTemplate = document.querySelector('#card-template').content
 
 // DOM узлы
+const popups = document.querySelectorAll('.popup')
+
 const popupCard = document.querySelector('.popup_type_new-card')
 const profileAddButton = document.querySelector('.profile__add-button')
 const closePopupButton = popupCard.querySelector('.popup__close')
@@ -59,10 +61,6 @@ profileAddButton.addEventListener('click', function() {
     openModal(popupCard)
 })
 
-profileAddButton.addEventListener('mouseover', function() {
-    popupCard.classList.add('popup_is-animated')
-})
-
 closePopupButton.addEventListener('click', function() {
     closeModal(popupCard)
 })
@@ -71,10 +69,6 @@ popupCard.addEventListener('click', closePopupOnBackground)
 
 popupProfileEditButton.addEventListener('click', function() {
     openModal(popupProfile)
-})
-
-popupProfileEditButton.addEventListener('mouseover', function() {
-    popupProfile.classList.add('popup_is-animated')
 })
 
 popupProfileCloseButton.addEventListener('click', function() {
@@ -99,3 +93,7 @@ initialCards.forEach((cardData) => {
     const cardElement = createCard(cardData, like, openModalImage)
         cardList.append(cardElement)
 })
+
+popups.forEach((popup) => {
+    popup.classList.add('popup_is-animated');
+  })

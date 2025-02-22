@@ -27,7 +27,6 @@ const nameProfileInput = popupProfile.querySelector('.popup__input_type_name')
 const jobProfileInput = popupProfile.querySelector('.popup__input_type_description');
 
 // Функции
-// Функция открытия модального окна картинки
 function openModalImage( {target} ) {
     const popupTypeImage = document.querySelector('.popup_type_image')
     const popupImage = popupTypeImage.querySelector('.popup__image')
@@ -37,7 +36,7 @@ function openModalImage( {target} ) {
       popupImage.src = target.src;
       popupImageCaption.textContent = target.alt;
       popupTypeImage.addEventListener('click', closePopupOnBackground)
-      popupImageCloseButton.addEventListener('click', function() {
+    popupImageCloseButton.addEventListener('click', function() {
         closeModal(popupTypeImage)
     })
 }
@@ -89,8 +88,6 @@ popupProfileCloseButton.addEventListener('click', function() {
 })
 
 popupProfile.addEventListener('click', closePopupOnBackground)
-
-
 
 profileFormElement.addEventListener('submit', handleProfileFormSubmit); 
 

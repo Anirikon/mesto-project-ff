@@ -1,5 +1,3 @@
-
-
 // @todo: Функция создания карточки
 export function createCard(cardData, like, openModalImage) {
     const cardTemplate = document.querySelector('#card-template').content
@@ -10,10 +8,10 @@ export function createCard(cardData, like, openModalImage) {
         cardTitle.textContent = cardData.name;
         cardImage.alt = cardData.name;
   
-    const deleteButton = cardElement.querySelector('.card__delete-button');
-        deleteButton.addEventListener('click', deleteCard);
+    const deleteButton = cardElement.querySelector('.card__delete-button')
+        deleteButton.addEventListener('click', deleteCard)
   
-    const likeButton = cardElement.querySelector('.card__like-button');
+    const likeButton = cardElement.querySelector('.card__like-button')
         likeButton.addEventListener('click', like)
         
         cardImage.addEventListener('click', openModalImage)
@@ -21,7 +19,7 @@ export function createCard(cardData, like, openModalImage) {
 }
   
 // @todo: Функция удаления карточки
-function deleteCard(event) { 
+function deleteCard(event, openModalImage) {
     const card = event.target.closest(".card")
     const likeButton = card.querySelector('.card__like-button')
     const cardImage = card.querySelector('.card__image')
@@ -29,7 +27,7 @@ function deleteCard(event) {
         cardImage.removeEventListener('click', openModalImage)
         event.target.removeEventListener('click', deleteCard)
             card.remove();
-  };
+}
   
 // @todo: Функция обработчика лайка
 export function like( {target} ) {

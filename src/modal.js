@@ -16,7 +16,7 @@ export function closePopupOnBackground({ currentTarget, target }) {
   const popup = currentTarget;
   const isClickedOnBackground = target === popup;
   if (isClickedOnBackground) {
-    popup.classList.remove("popup_is-opened");
+    closeModal(popup);
   }
 }
 

@@ -9,14 +9,12 @@ const popups = document.querySelectorAll(".popup");
 
 const popupCard = document.querySelector(".popup_type_new-card");
 const profileAddButton = document.querySelector(".profile__add-button");
-const closePopupButton = popupCard.querySelector(".popup__close");
 const newPlaceFormElement = popupCard.querySelector(".popup__form");
 const placeName = popupCard.querySelector(".popup__input_type_card-name");
 const link = popupCard.querySelector(".popup__input_type_url");
 
 const popupProfileEditButton = document.querySelector(".profile__edit-button");
 const popupProfile = document.querySelector(".popup_type_edit");
-const popupProfileCloseButton = popupProfile.querySelector(".popup__close");
 
 const cardList = document.querySelector(".places__list");
 
@@ -26,19 +24,15 @@ const profileFormElement = popupProfile.querySelector(".popup__form");
 const nameProfileInput = popupProfile.querySelector(".popup__input_type_name");
 const jobProfileInput = popupProfile.querySelector(".popup__input_type_description");
 
+const popupTypeImage = document.querySelector(".popup_type_image");
+const popupImage = popupTypeImage.querySelector(".popup__image");
+const popupImageCaption = popupTypeImage.querySelector(".popup__caption");
+
 // Функции
 function openModalImage({ target }) {
-  const popupTypeImage = document.querySelector(".popup_type_image");
-  const popupImage = popupTypeImage.querySelector(".popup__image");
-  const popupImageCaption = popupTypeImage.querySelector(".popup__caption");
-  const popupImageCloseButton = popupTypeImage.querySelector(".popup__close");
   openModal(popupTypeImage);
   popupImage.src = target.src;
   popupImageCaption.textContent = target.alt;
-  popupTypeImage.addEventListener("click", closePopupOnBackground);
-  popupImageCloseButton.addEventListener("click", function () {
-    closeModal(popupTypeImage);
-  });
 }
 
 function resetForm(form) {
@@ -69,60 +63,25 @@ function openProfileModal() {
 }
 
 // Обработчики событий
-const listeners = [
-  {
-    listenerEvent: "click",
-    listenerTarget: profileAddButton,
-    argument: popupCard,
-    fn: openModal,
-  },
-  {
-    listenerEvent: "click",
-    listenerTarget: closePopupButton,
-    argument: popupCard,
-    fn: closeModal,
-  },
-  {
-    listenerEvent: "click",
-    listenerTarget: popupProfileCloseButton,
-    argument: popupProfile,
-    fn: closeModal,
-  },
-  {
-    listenerEvent: "click",
-    listenerTarget: popupProfileEditButton,
-    fn: openProfileModal,
-  },
-  {
-    listenerEvent: "mousedown",
-    listenerTarget: popupCard,
-    fn: closePopupOnBackground,
-  },
-  {
-    listenerEvent: "mousedown",
-    listenerTarget: popupProfile,
-    fn: closePopupOnBackground,
-  },
-  {
-    listenerEvent: "submit",
-    listenerTarget: profileFormElement,
-    fn: handleProfileFormSubmit,
-  },
-  {
-    listenerEvent: "submit",
-    listenerTarget: newPlaceFormElement,
-    fn: handleNewPlaceFormSubmit,
-  },
-];
+profileAddButton.addEventListener("click", function () {
+  openModal(popupCard);
+});
 
-listeners.forEach(({ listenerEvent, listenerTarget, argument, fn }) => {
-  if (argument) {
-    listenerTarget.addEventListener(listenerEvent, function () {
-      fn(argument);
-    });
-  } else {
-    listenerTarget.addEventListener(listenerEvent, fn);
-  }
+popupProfileEditButton.addEventListener("click", openProfileModal);
+
+profileFormElement.addEventListener("submit", handleProfileFormSubmit);
+
+newPlaceFormElement.addEventListener("submit", handleNewPlaceFormSubmit);
+
+popups.forEach((popup) => {
+  const closeButton = popup.querySelector(".popup__close");
+  closeButton.addEventListener("click", () => {
+    closeModal(popup);
+  });
+});
+
+popups.forEach((popup) => {
+  popup.addEventListener("mousedown", closePopupOnBackground);
 });
 
 // Вывод карточек на страницу

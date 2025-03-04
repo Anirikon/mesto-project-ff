@@ -3,7 +3,7 @@ import "./pages/index.css";
 import { initialCards } from "./cards.js";
 import { openModal, closeModal, closePopupOnBackground } from "./modal.js";
 import { createCard, like } from "./card.js";
-import { enableValidation } from "./validation.js";
+import { enableValidation, clearValidation, setEventListeners } from "./validation.js";
 
 // DOM узлы
 const popups = document.querySelectorAll(".popup");
@@ -28,6 +28,16 @@ const jobProfileInput = popupProfile.querySelector(".popup__input_type_descripti
 const popupTypeImage = document.querySelector(".popup_type_image");
 const popupImage = popupTypeImage.querySelector(".popup__image");
 const popupImageCaption = popupTypeImage.querySelector(".popup__caption");
+
+//конфиг валидации
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
 
 // Функции
 function openModalImage({ target }) {
@@ -61,11 +71,15 @@ function openProfileModal() {
   nameProfileInput.value = profileTitle.textContent;
   jobProfileInput.value = profileDescription.textContent;
   openModal(popupProfile);
+  clearValidation(profileFormElement, validationConfig);
 }
 
 // Обработчики событий
 profileAddButton.addEventListener("click", function () {
+  resetForm(newPlaceFormElement);
   openModal(popupCard);
+  clearValidation(newPlaceFormElement, validationConfig);
+  setEventListeners(newPlaceFormElement)
 });
 
 popupProfileEditButton.addEventListener("click", openProfileModal);
@@ -95,11 +109,4 @@ popups.forEach((popup) => {
   popup.classList.add("popup_is-animated");
 });
 
-enableValidation({
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
-}); 
+enableValidation(validationConfig);

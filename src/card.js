@@ -1,20 +1,33 @@
 // @todo: Функция создания карточки
-export function createCard(cardData, like, openModalImage) {
+export function createCard(
+  cardData,
+  userId,
+  cardOwnerId,
+  like,
+  openModalImage
+) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   const cardImage = cardElement.querySelector(".card__image");
   const cardTitle = cardElement.querySelector(".card__title");
+  const deleteButton = cardElement.querySelector(".card__delete-button");
   cardImage.src = cardData.link;
   cardTitle.textContent = cardData.name;
   cardImage.alt = cardData.name;
 
-  const deleteButton = cardElement.querySelector(".card__delete-button");
-  deleteButton.addEventListener("click", () => deleteCard(cardElement));
+  cardImage.addEventListener("click", openModalImage);
+
+  
+  if (userId === cardOwnerId) {
+    deleteButton.addEventListener("click", () => deleteCard(cardElement));
+  } else {
+    deleteButton.style.display = "none";
+  }
 
   const likeButton = cardElement.querySelector(".card__like-button");
   likeButton.addEventListener("click", like);
 
-  cardImage.addEventListener("click", openModalImage);
+  
   return cardElement;
 }
 

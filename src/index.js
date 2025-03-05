@@ -3,7 +3,12 @@ import "./pages/index.css";
 import { initialCards } from "./cards.js";
 import { openModal, closeModal, closePopupOnBackground } from "./modal.js";
 import { createCard, like } from "./card.js";
-import { enableValidation, clearValidation, setEventListeners } from "./validation.js";
+import {
+  enableValidation,
+  clearValidation,
+  setEventListeners,
+} from "./validation.js";
+import { userInfo, getInitialCards } from "./api.js";
 
 // DOM узлы
 const popups = document.querySelectorAll(".popup");
@@ -23,7 +28,9 @@ const profileTitle = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
 const profileFormElement = popupProfile.querySelector(".popup__form");
 const nameProfileInput = popupProfile.querySelector(".popup__input_type_name");
-const jobProfileInput = popupProfile.querySelector(".popup__input_type_description");
+const jobProfileInput = popupProfile.querySelector(
+  ".popup__input_type_description"
+);
 
 const popupTypeImage = document.querySelector(".popup_type_image");
 const popupImage = popupTypeImage.querySelector(".popup__image");
@@ -79,7 +86,7 @@ profileAddButton.addEventListener("click", function () {
   resetForm(newPlaceFormElement);
   openModal(popupCard);
   clearValidation(newPlaceFormElement, validationConfig);
-  setEventListeners(newPlaceFormElement)
+  setEventListeners(newPlaceFormElement);
 });
 
 popupProfileEditButton.addEventListener("click", openProfileModal);
@@ -99,14 +106,24 @@ popups.forEach((popup) => {
   popup.addEventListener("mousedown", closePopupOnBackground);
 });
 
-// Вывод карточек на страницу
-initialCards.forEach((cardData) => {
-  const cardElement = createCard(cardData, like, openModalImage);
-  cardList.append(cardElement);
-});
-
 popups.forEach((popup) => {
   popup.classList.add("popup_is-animated");
 });
 
 enableValidation(validationConfig);
+
+// Вывод карточек на страницу
+Promise.all([userInfo(), getInitialCards()])
+.then(([response1, response2]) => {
+  // console.log(response1)
+  // console.log(response2)
+
+  response2.forEach((cardData) => {
+    console.log(cardData.owner._id);
+    const cardElement = createCard(cardData, response1._id, cardData.owner._id, like,  openModalImage);
+    cardList.append(cardElement);
+  });
+})
+.catch((err) => {
+  console.log(err);
+});

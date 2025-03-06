@@ -2,42 +2,47 @@
 export function createCard(
   cardData,
   userId,
-  cardOwnerId,
-  like,
-  openModalImage
+  ownerId,
+  likes,
+  toggleLike,
+  openModalImage,
+  openModalDeleteCard
 ) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   const cardImage = cardElement.querySelector(".card__image");
   const cardTitle = cardElement.querySelector(".card__title");
   const deleteButton = cardElement.querySelector(".card__delete-button");
+  const likeButton = cardElement.querySelector(".card__like-button");
+  const likesCounter = cardElement.querySelector(".card__like-counter");
   cardImage.src = cardData.link;
   cardTitle.textContent = cardData.name;
   cardImage.alt = cardData.name;
 
   cardImage.addEventListener("click", openModalImage);
-
-  
-  if (userId === cardOwnerId) {
-    deleteButton.addEventListener("click", () => deleteCard(cardElement));
-  } else {
+  likeButton.addEventListener("click", toggleLike);
+  // console.log(userId)
+  if (userId === ownerId) {
+    deleteButton.addEventListener("click", openModalDeleteCard);
+  } else if (userId || ownerId === undefined) {
     deleteButton.style.display = "none";
   }
 
-  const likeButton = cardElement.querySelector(".card__like-button");
-  likeButton.addEventListener("click", like);
+  if (likes.length !== 0) {
+    likesCounter.style.display = "flex";
+    likesCounter.textContent = likes.length;
+  }
 
-  
   return cardElement;
 }
 
 // @todo: Функция удаления карточки
-function deleteCard(cardElement) {
+export function removeCardFromList(cardElement) {
   cardElement.remove();
   cardElement = null;
 }
 
 // @todo: Функция обработчика лайка
-export function like({ target }) {
+export function toggleLike({ target }) {
   target.classList.toggle("card__like-button_is-active");
 }

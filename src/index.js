@@ -2,13 +2,13 @@
 import "./pages/index.css";
 import { initialCards } from "./cards.js";
 import { openModal, closeModal, closePopupOnBackground } from "./modal.js";
-import { createCard, like } from "./card.js";
+import { createCard, toggleLike, removeCardFromList } from "./card.js";
 import {
   enableValidation,
   clearValidation,
   setEventListeners,
 } from "./validation.js";
-import { userInfo, getInitialCards } from "./api.js";
+import { getUserInfo, getInitialCards, saveProfile, addNewCard, deleteCard } from "./api.js";
 
 // DOM узлы
 const popups = document.querySelectorAll(".popup");
@@ -36,6 +36,9 @@ const popupTypeImage = document.querySelector(".popup_type_image");
 const popupImage = popupTypeImage.querySelector(".popup__image");
 const popupImageCaption = popupTypeImage.querySelector(".popup__caption");
 
+const deleteCardModal = document.querySelector('.popup_type_delete-card')
+const deleteCardForm = deleteCardModal.querySelector('.popup__form')
+
 //конфиг валидации
 const validationConfig = {
   formSelector: ".popup__form",
@@ -53,6 +56,10 @@ function openModalImage({ target }) {
   popupImageCaption.textContent = target.alt;
 }
 
+function openModalDeleteCard() {
+  openModal(deleteCardModal);
+}
+
 function resetForm(form) {
   form.reset();
 }
@@ -61,15 +68,21 @@ function handleProfileFormSubmit(event) {
   event.preventDefault();
   profileTitle.textContent = nameProfileInput.value;
   profileDescription.textContent = jobProfileInput.value;
+  saveProfile(nameProfileInput.value, jobProfileInput.value)
   closeModal(popupProfile);
 }
 
+// Добавляет новую карточку, но удалить ее нельзя, т.к. нет слушателя на удаление карточки
 function handleNewPlaceFormSubmit(event) {
   event.preventDefault();
   const cardData = { name: placeName.value, link: link.value };
   initialCards.unshift(cardData);
-  const cardElement = createCard(cardData, like, openModalImage);
+  let userId;
+  let ownerId;
+  let likes = 0;
+  const cardElement = createCard(cardData, userId, ownerId, likes, toggleLike, openModalImage, openModalDeleteCard);
   cardList.prepend(cardElement);
+  addNewCard(placeName.value, link.value)
   closeModal(popupCard);
   resetForm(newPlaceFormElement);
 }
@@ -113,15 +126,22 @@ popups.forEach((popup) => {
 enableValidation(validationConfig);
 
 // Вывод карточек на страницу
-Promise.all([userInfo(), getInitialCards()])
+Promise.all([getUserInfo(), getInitialCards()])
 .then(([response1, response2]) => {
-  // console.log(response1)
-  // console.log(response2)
+  profileTitle.textContent = response1.name;
+  profileDescription.textContent = response1.about;
 
   response2.forEach((cardData) => {
-    console.log(cardData.owner._id);
-    const cardElement = createCard(cardData, response1._id, cardData.owner._id, like,  openModalImage);
+    const cardElement = createCard(cardData, response1._id, cardData.owner._id, cardData.likes, toggleLike, openModalImage, openModalDeleteCard);
     cardList.append(cardElement);
+    if (response1._id === cardData.owner._id) {
+      deleteCardForm.addEventListener('submit', (event) => {
+        event.preventDefault()
+        deleteCard(cardData._id)
+        removeCardFromList(cardElement)
+        closeModal(deleteCardModal);
+      })
+    } 
   });
 })
 .catch((err) => {

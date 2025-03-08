@@ -1,3 +1,4 @@
+import { addLike, removeLike } from "./api.js";
 // @todo: Функция создания карточки
 export function createCard(
   cardData,
@@ -34,6 +35,11 @@ export function createCard(
     likesCounter.textContent = likes.length;
   }
 
+  likes.forEach(element => {
+    if (element._id === userId) {
+      likeButton.classList.add("card__like-button_is-active");
+    }   
+  });
   return cardElement;
 }
 
@@ -44,6 +50,26 @@ export function removeCardFromList(cardElement) {
 }
 
 // @todo: Функция обработчика лайка
-export function toggleLike({ target }) {
-  target.classList.toggle("card__like-button_is-active");
+export function toggleLike(event) {
+  const likeCounter = event.target
+    .closest(".card__like")
+    .querySelector(".card__like-counter");
+
+  if (event.target.classList.value === "card__like-button") {
+    addLike(event.target.closest("[data-id]").dataset.id).then((result) => {
+      likeCounter.textContent = result.likes.length;
+      if (result.likes.length !== 0) {
+        likeCounter.style.display = "flex";
+      }
+    });
+    event.target.classList.add("card__like-button_is-active");
+  } else if (event.target.classList.value === "card__like-button card__like-button_is-active") {
+    removeLike(event.target.closest("[data-id]").dataset.id).then((result) => {
+      likeCounter.textContent = result.likes.length;
+      if (result.likes.length == 0) {
+        likeCounter.style.display = "none";
+      }
+    });
+    event.target.classList.remove("card__like-button_is-active");
+  }
 }

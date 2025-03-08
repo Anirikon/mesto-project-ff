@@ -1,6 +1,5 @@
 // Импорт/экспорт
 import "./pages/index.css";
-import { initialCards } from "./cards.js";
 import { openModal, closeModal, closePopupOnBackground } from "./modal.js";
 import { createCard, toggleLike, removeCardFromList } from "./card.js";
 import {
@@ -8,7 +7,13 @@ import {
   clearValidation,
   setEventListeners,
 } from "./validation.js";
-import { getUserInfo, getInitialCards, saveProfile, addNewCard, deleteCard } from "./api.js";
+import {
+  getUserInfo,
+  getInitialCards,
+  saveProfile,
+  addNewCard,
+  deleteCard,
+} from "./api.js";
 
 // DOM узлы
 const popups = document.querySelectorAll(".popup");
@@ -36,8 +41,8 @@ const popupTypeImage = document.querySelector(".popup_type_image");
 const popupImage = popupTypeImage.querySelector(".popup__image");
 const popupImageCaption = popupTypeImage.querySelector(".popup__caption");
 
-const deleteCardModal = document.querySelector('.popup_type_delete-card')
-const deleteCardForm = deleteCardModal.querySelector('.popup__form')
+const deleteCardModal = document.querySelector(".popup_type_delete-card");
+const deleteCardForm = deleteCardModal.querySelector(".popup__form");
 
 //конфиг валидации
 const validationConfig = {
@@ -56,7 +61,8 @@ function openModalImage({ target }) {
   popupImageCaption.textContent = target.alt;
 }
 
-function openModalDeleteCard() {
+function openModalDeleteCard(event) {
+  event.target.parentElement.dataset.state = "deleted"
   openModal(deleteCardModal);
 }
 
@@ -66,9 +72,10 @@ function resetForm(form) {
 
 function handleProfileFormSubmit(event) {
   event.preventDefault();
-  profileTitle.textContent = nameProfileInput.value;
-  profileDescription.textContent = jobProfileInput.value;
-  saveProfile(nameProfileInput.value, jobProfileInput.value)
+  saveProfile(nameProfileInput.value, jobProfileInput.value).then((result) => {
+    profileTitle.textContent = result.name;
+    profileDescription.textContent = result.about;
+  });
   closeModal(popupProfile);
 }
 
@@ -76,15 +83,40 @@ function handleProfileFormSubmit(event) {
 function handleNewPlaceFormSubmit(event) {
   event.preventDefault();
   const cardData = { name: placeName.value, link: link.value };
-  initialCards.unshift(cardData);
-  let userId;
-  let ownerId;
-  let likes = 0;
-  const cardElement = createCard(cardData, userId, ownerId, likes, toggleLike, openModalImage, openModalDeleteCard);
-  cardList.prepend(cardElement);
-  addNewCard(placeName.value, link.value)
+  Promise.all([getUserInfo(), addNewCard(placeName.value, link.value)]).then(
+    ([response1, response2]) => {
+      const cardElement = createCard(
+        cardData,
+        response1._id,
+        response2._id,
+        response2.owner._id,
+        response2.likes,
+        toggleLike,
+        openModalImage,
+        openModalDeleteCard
+      );
+      cardList.prepend(cardElement);
+    }
+  );
   closeModal(popupCard);
   resetForm(newPlaceFormElement);
+}
+
+function handleDeleteCardFormSubmit(event) {
+  event.preventDefault();
+  const cards = cardList.querySelectorAll(".places__item");
+  Promise.all([getUserInfo(), getInitialCards()]).then(
+    ([response1, response2]) => {
+      response2.forEach((cardData, index) => {
+        if (!!((response1._id === cardData.owner._id) & (cards[index].dataset.id === cardData._id) & (cards[index].dataset.state === 'deleted'))) {
+          console.log(cards[index].dataset.state)
+          deleteCard(cardData._id);
+          removeCardFromList(cards[index]);
+          closeModal(deleteCardModal);
+        }
+      });
+    }
+  );
 }
 
 function openProfileModal() {
@@ -108,6 +140,8 @@ profileFormElement.addEventListener("submit", handleProfileFormSubmit);
 
 newPlaceFormElement.addEventListener("submit", handleNewPlaceFormSubmit);
 
+deleteCardForm.addEventListener("submit", handleDeleteCardFormSubmit);
+
 popups.forEach((popup) => {
   const closeButton = popup.querySelector(".popup__close");
   closeButton.addEventListener("click", () => {
@@ -127,23 +161,25 @@ enableValidation(validationConfig);
 
 // Вывод карточек на страницу
 Promise.all([getUserInfo(), getInitialCards()])
-.then(([response1, response2]) => {
-  profileTitle.textContent = response1.name;
-  profileDescription.textContent = response1.about;
+  .then(([response1, response2]) => {
+    console.log(response1, response2);
+    profileTitle.textContent = response1.name;
+    profileDescription.textContent = response1.about;
 
-  response2.forEach((cardData) => {
-    const cardElement = createCard(cardData, response1._id, cardData.owner._id, cardData.likes, toggleLike, openModalImage, openModalDeleteCard);
-    cardList.append(cardElement);
-    if (response1._id === cardData.owner._id) {
-      deleteCardForm.addEventListener('submit', (event) => {
-        event.preventDefault()
-        deleteCard(cardData._id)
-        removeCardFromList(cardElement)
-        closeModal(deleteCardModal);
-      })
-    } 
+    response2.forEach((cardData) => {
+      const cardElement = createCard(
+        cardData,
+        response1._id,
+        cardData._id,
+        cardData.owner._id,
+        cardData.likes,
+        toggleLike,
+        openModalImage,
+        openModalDeleteCard
+      );
+      cardList.append(cardElement);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
   });
-})
-.catch((err) => {
-  console.log(err);
-});

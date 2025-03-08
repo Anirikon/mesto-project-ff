@@ -2,6 +2,7 @@
 export function createCard(
   cardData,
   userId,
+  cardId,
   ownerId,
   likes,
   toggleLike,
@@ -18,10 +19,10 @@ export function createCard(
   cardImage.src = cardData.link;
   cardTitle.textContent = cardData.name;
   cardImage.alt = cardData.name;
+  cardElement.dataset.id = cardId;
 
   cardImage.addEventListener("click", openModalImage);
   likeButton.addEventListener("click", toggleLike);
-  // console.log(userId)
   if (userId === ownerId) {
     deleteButton.addEventListener("click", openModalDeleteCard);
   } else if (userId || ownerId === undefined) {

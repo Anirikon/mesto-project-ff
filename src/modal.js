@@ -9,6 +9,10 @@ export function closeModal(elem) {
   if (elem) {
     elem.classList.remove("popup_is-opened");
     document.removeEventListener("keydown", closePopupByEsc);
+    const deletedStateElements = document.querySelectorAll('[data-state]')
+    deletedStateElements.forEach((element) => {
+      delete element.dataset.state
+    })
   }
 }
 // Функция закрытия модального окна по оверлею

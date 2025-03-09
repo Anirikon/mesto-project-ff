@@ -13,6 +13,7 @@ import {
   saveProfile,
   addNewCard,
   deleteCard,
+  updateAvatar,
 } from "./api.js";
 
 // DOM узлы
@@ -44,6 +45,14 @@ const popupImageCaption = popupTypeImage.querySelector(".popup__caption");
 const deleteCardModal = document.querySelector(".popup_type_delete-card");
 const deleteCardForm = deleteCardModal.querySelector(".popup__form");
 
+const profileImage = document.querySelector(".profile__image");
+const profileEditImage = document.querySelector(".profile__image__edit");
+const popupEditAvatar = document.querySelector(".edit-profile-avatar");
+const editAvatarForm = popupEditAvatar.querySelector(".popup__form");
+const avatarFormInput = popupEditAvatar.querySelector(
+  ".popup__input_type_avatar"
+);
+
 //конфиг валидации
 const validationConfig = {
   formSelector: ".popup__form",
@@ -61,8 +70,19 @@ function openModalImage({ target }) {
   popupImageCaption.textContent = target.alt;
 }
 
+function openProfileModal() {
+  nameProfileInput.value = profileTitle.textContent;
+  jobProfileInput.value = profileDescription.textContent;
+  openModal(popupProfile);
+  clearValidation(profileFormElement, validationConfig);
+}
+
+function openAvatarModal() {
+  openModal(popupEditAvatar);
+}
+
 function openModalDeleteCard(event) {
-  event.target.parentElement.dataset.state = "deleted"
+  event.target.parentElement.dataset.state = "deleted";
   openModal(deleteCardModal);
 }
 
@@ -79,7 +99,6 @@ function handleProfileFormSubmit(event) {
   closeModal(popupProfile);
 }
 
-// Добавляет новую карточку, но удалить ее нельзя, т.к. нет слушателя на удаление карточки
 function handleNewPlaceFormSubmit(event) {
   event.preventDefault();
   const cardData = { name: placeName.value, link: link.value };
@@ -107,23 +126,36 @@ function handleDeleteCardFormSubmit(event) {
   const cards = cardList.querySelectorAll(".places__item");
   Promise.all([getUserInfo(), getInitialCards()]).then(
     ([response1, response2]) => {
-      response2.forEach((cardData, index) => {
-        if (!!((response1._id === cardData.owner._id) & (cards[index].dataset.id === cardData._id) & (cards[index].dataset.state === 'deleted'))) {
-          console.log(cards[index].dataset.state)
+      let index = 0;
+      for (const cardData of response2) {
+        if (
+          !!(
+            (response1._id === cardData.owner._id) &
+            (cards[index].dataset.id === cardData._id) &
+            (cards[index].dataset.state === "deleted")
+          )
+        ) {
           deleteCard(cardData._id);
           removeCardFromList(cards[index]);
           closeModal(deleteCardModal);
+          break;
+        } else {
+          index++;
         }
-      });
+      }
     }
   );
 }
 
-function openProfileModal() {
-  nameProfileInput.value = profileTitle.textContent;
-  jobProfileInput.value = profileDescription.textContent;
-  openModal(popupProfile);
-  clearValidation(profileFormElement, validationConfig);
+function handleEditAvatarFormSubmit(event) {
+  event.preventDefault();
+  console.log(avatarFormInput.value);
+  updateAvatar(avatarFormInput.value).then((response) => {
+    console.log(response.avatar);
+    profileImage.style.backgroundImage = `url(${response.avatar})`;
+  });
+  closeModal(popupEditAvatar);
+  resetForm(editAvatarForm);
 }
 
 // Обработчики событий
@@ -142,6 +174,10 @@ newPlaceFormElement.addEventListener("submit", handleNewPlaceFormSubmit);
 
 deleteCardForm.addEventListener("submit", handleDeleteCardFormSubmit);
 
+editAvatarForm.addEventListener("submit", handleEditAvatarFormSubmit);
+
+profileEditImage.addEventListener("click", openAvatarModal);
+
 popups.forEach((popup) => {
   const closeButton = popup.querySelector(".popup__close");
   closeButton.addEventListener("click", () => {
@@ -151,18 +187,16 @@ popups.forEach((popup) => {
 
 popups.forEach((popup) => {
   popup.addEventListener("mousedown", closePopupOnBackground);
-});
-
-popups.forEach((popup) => {
   popup.classList.add("popup_is-animated");
 });
 
 enableValidation(validationConfig);
 
-// Вывод карточек на страницу
+// Инициализация загрузки данных с сервера на страницу
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([response1, response2]) => {
     console.log(response1, response2);
+    profileImage.style.backgroundImage = `url(${response1.avatar})`;
     profileTitle.textContent = response1.name;
     profileDescription.textContent = response1.about;
 

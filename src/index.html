@@ -16,7 +16,9 @@
     </header>
     <main class="content">
       <section class="profile page__section">
-        <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>);"></div>
+        <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>);">
+          <div class="profile__image__edit" style="background-image: url(<%=require('./images/edit-icon.svg')%>);"></div>
+        </div>
         <div class="profile__info">
           <h1 class="profile__title">Жак-Ив Кусто</h1>
           <button class="profile__edit-button" type="button"></button>
@@ -62,7 +64,7 @@
             data-error-message="Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы" required>
           <span class="form__error input__place-name-error" id="place-name-error"></span>
           <input type="url" name="link" id="input__link" class="popup__input popup__input_type_url"
-            placeholder="Ссылка на картинку" required>
+            placeholder="Ссылка на картинку" data-error-message="Введите адрес сайта" required>
           <span class="form__error input__link-error" id="link-error"></span>
           <button type="submit" class="button popup__button">Сохранить</button>
         </form>
@@ -81,6 +83,18 @@
         <h3 class="popup__title">Вы уверены?</h3>
         <form class="popup__form" name="delete-card" novalidate>
           <button type="submit" class="button popup__button">Да</button>
+        </form>
+      </div>
+    </div>
+    <div class="popup edit-profile-avatar">
+      <div class="popup__content">
+        <button type="button" class="popup__close"></button>
+        <h3 class="popup__title">Обновить аватар</h3>
+        <form class="popup__form" name="edit-profile-avatar" novalidate>
+          <input type="url" name="avatar" id="input__avatar" class="popup__input popup__input_type_avatar"
+            placeholder="Ссылка на картинку" required>
+          <span class="form__error input__avatar-error" id="avatar-error"></span>
+          <button type="submit" class="button popup__button">Сохранить</button>
         </form>
       </div>
     </div>

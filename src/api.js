@@ -80,7 +80,6 @@ export const addLike = (cardId) => {
     headers: config.headers,
   }).then((res) => {
     if (res.ok) {
-      console.log('Поставлен лайк')
       return res.json();
     }
     return Promise.reject(`Ошибка: ${res.status}`);
@@ -93,7 +92,22 @@ export const removeLike = (cardId) => {
     headers: config.headers,
   }).then((res) => {
     if (res.ok) {
-      console.log('Удален лайк')
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  });
+};
+
+export const updateAvatar = (avatar) => {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
+    method: "PATCH",
+    headers: config.headers,
+    body: JSON.stringify({
+      avatar: avatar,
+    }),
+  }).then((res) => {
+    if (res.ok) {
+      console.log('Аватар обновлен')
       return res.json();
     }
     return Promise.reject(`Ошибка: ${res.status}`);

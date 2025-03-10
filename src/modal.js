@@ -2,7 +2,6 @@
 export function openModal(elem) {
   document.addEventListener("keydown", closePopupByEsc);
   elem.classList.add("popup_is-opened");
-  elem.querySelector(".popup__button").dataset.loader = "ready-to-download";
 }
 
 // @todo: Функция закрытия модального окна
@@ -10,10 +9,6 @@ export function closeModal(elem) {
   if (elem) {
     elem.classList.remove("popup_is-opened");
     document.removeEventListener("keydown", closePopupByEsc);
-    const deletedStateElements = document.querySelectorAll("[data-state]");
-    deletedStateElements.forEach((element) => {
-      delete element.dataset.state;
-    });
   }
 }
 // Функция закрытия модального окна по оверлею

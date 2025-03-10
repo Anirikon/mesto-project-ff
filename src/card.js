@@ -55,8 +55,6 @@ export function toggleLike(event) {
   const likeCounter = event.target
     .closest(".card__like")
     .querySelector(".card__like-counter");
-  console.log(event.target);
-
   if (event.target.classList.value === "card__like-button") {
     addLike(event.target.closest("[data-id]").dataset.id).then((result) => {
       likeCounter.textContent = result.likes.length;

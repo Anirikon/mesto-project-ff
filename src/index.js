@@ -200,7 +200,6 @@ function handleEditAvatarFormSubmit(event) {
 
 function renderLoading(isLoading) {
   const animatedElement = document.querySelector("[data-loader]");
-  console.log(animatedElement);
   const ellipsis = document.createElement("span");
   ellipsis.className = "loading-indicator";
   ellipsis.textContent = "...";

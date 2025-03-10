@@ -92,18 +92,27 @@ function resetForm(form) {
 
 function handleProfileFormSubmit(event) {
   event.preventDefault();
-  saveProfile(nameProfileInput.value, jobProfileInput.value).then((result) => {
-    profileTitle.textContent = result.name;
-    profileDescription.textContent = result.about;
-  });
-  closeModal(popupProfile);
+  renderLoading(true);
+  saveProfile(nameProfileInput.value, jobProfileInput.value)
+    .then((result) => {
+      profileTitle.textContent = result.name;
+      profileDescription.textContent = result.about;
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      renderLoading(false);
+      closeModal(popupProfile);
+    });
 }
 
 function handleNewPlaceFormSubmit(event) {
   event.preventDefault();
+  renderLoading(true);
   const cardData = { name: placeName.value, link: link.value };
-  Promise.all([getUserInfo(), addNewCard(placeName.value, link.value)]).then(
-    ([response1, response2]) => {
+  Promise.all([getUserInfo(), addNewCard(placeName.value, link.value)])
+    .then(([response1, response2]) => {
       const cardElement = createCard(
         cardData,
         response1._id,
@@ -115,17 +124,23 @@ function handleNewPlaceFormSubmit(event) {
         openModalDeleteCard
       );
       cardList.prepend(cardElement);
-    }
-  );
-  closeModal(popupCard);
-  resetForm(newPlaceFormElement);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      renderLoading(false);
+      closeModal(popupCard);
+      resetForm(newPlaceFormElement);
+    });
 }
 
 function handleDeleteCardFormSubmit(event) {
   event.preventDefault();
+  renderLoading(true);
   const cards = cardList.querySelectorAll(".places__item");
-  Promise.all([getUserInfo(), getInitialCards()]).then(
-    ([response1, response2]) => {
+  Promise.all([getUserInfo(), getInitialCards()])
+    .then(([response1, response2]) => {
       let index = 0;
       for (const cardData of response2) {
         if (
@@ -143,19 +158,66 @@ function handleDeleteCardFormSubmit(event) {
           index++;
         }
       }
-    }
-  );
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      renderLoading(false);
+    });
 }
 
 function handleEditAvatarFormSubmit(event) {
   event.preventDefault();
-  console.log(avatarFormInput.value);
-  updateAvatar(avatarFormInput.value).then((response) => {
-    console.log(response.avatar);
-    profileImage.style.backgroundImage = `url(${response.avatar})`;
-  });
-  closeModal(popupEditAvatar);
-  resetForm(editAvatarForm);
+  renderLoading(true);
+  updateAvatar(avatarFormInput.value)
+    .then((response) => {
+      profileImage.style.backgroundImage = `url(${response.avatar})`;
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() => {
+      renderLoading(false);
+      closeModal(popupEditAvatar);
+      resetForm(editAvatarForm);
+    });
+}
+
+function renderLoading(isLoading) {
+  const animatedElement = document.querySelector("[data-loader]");
+  const ellipsis = document.createElement("span");
+  ellipsis.className = "loading-indicator";
+  ellipsis.textContent = "...";
+  if (isLoading & (animatedElement.textContent === "Сохранить")) {
+    animatedElement.textContent = "Сохранение";
+    animatedElement.append(ellipsis);
+    ellipsis.classList.add("popup__button-loading");
+  } else if (isLoading & (animatedElement.textContent === "Да")) {
+    animatedElement.textContent = "Удаление";
+    animatedElement.append(ellipsis);
+    ellipsis.classList.add("popup__button-loading");
+  } else if (
+    (isLoading === false) &
+    (animatedElement.textContent === "Сохранение...")
+  ) {
+    ellipsis.classList.remove("popup__button-loading");
+    animatedElement.textContent = "Сохранить";
+    delete animatedElement.dataset.loader;
+    animatedElement.classList.add("popup__button_disabled");
+    animatedElement.disabled = true;
+    ellipsis.remove();
+  } else if (
+    (isLoading === false) &
+    (animatedElement.textContent === "Удаление...")
+  ) {
+    ellipsis.classList.remove("popup__button-loading");
+    animatedElement.textContent = "Да";
+    delete animatedElement.dataset.loader;
+    animatedElement.classList.add("popup__button_disabled");
+    animatedElement.disabled = true;
+    ellipsis.remove();
+  }
 }
 
 // Обработчики событий
@@ -183,9 +245,6 @@ popups.forEach((popup) => {
   closeButton.addEventListener("click", () => {
     closeModal(popup);
   });
-});
-
-popups.forEach((popup) => {
   popup.addEventListener("mousedown", closePopupOnBackground);
   popup.classList.add("popup_is-animated");
 });
@@ -195,11 +254,9 @@ enableValidation(validationConfig);
 // Инициализация загрузки данных с сервера на страницу
 Promise.all([getUserInfo(), getInitialCards()])
   .then(([response1, response2]) => {
-    console.log(response1, response2);
     profileImage.style.backgroundImage = `url(${response1.avatar})`;
     profileTitle.textContent = response1.name;
     profileDescription.textContent = response1.about;
-
     response2.forEach((cardData) => {
       const cardElement = createCard(
         cardData,

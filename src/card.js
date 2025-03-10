@@ -35,10 +35,10 @@ export function createCard(
     likesCounter.textContent = likes.length;
   }
 
-  likes.forEach(element => {
+  likes.forEach((element) => {
     if (element._id === userId) {
       likeButton.classList.add("card__like-button_is-active");
-    }   
+    }
   });
   return cardElement;
 }
@@ -63,7 +63,10 @@ export function toggleLike(event) {
       }
     });
     event.target.classList.add("card__like-button_is-active");
-  } else if (event.target.classList.value === "card__like-button card__like-button_is-active") {
+  } else if (
+    event.target.classList.value ===
+    "card__like-button card__like-button_is-active"
+  ) {
     removeLike(event.target.closest("[data-id]").dataset.id).then((result) => {
       likeCounter.textContent = result.likes.length;
       if (result.likes.length == 0) {

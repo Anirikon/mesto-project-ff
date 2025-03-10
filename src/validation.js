@@ -69,7 +69,9 @@ export function setEventListeners(formElement) {
 }
 
 export function clearValidation(profileForm, validationConfig) {
-  const inputList = Array.from(profileForm.querySelectorAll(validationConfig.inputSelector));
+  const inputList = Array.from(
+    profileForm.querySelectorAll(validationConfig.inputSelector)
+  );
   inputList.forEach((inputElement) => {
     const errorElement = profileForm.querySelector(`.${inputElement.id}-error`);
     inputElement.classList.remove("popup__input_type_error");

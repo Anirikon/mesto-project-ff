@@ -107,7 +107,7 @@ export const updateAvatar = (avatar) => {
     }),
   }).then((res) => {
     if (res.ok) {
-      console.log('Аватар обновлен')
+      console.log("Аватар обновлен");
       return res.json();
     }
     return Promise.reject(`Ошибка: ${res.status}`);

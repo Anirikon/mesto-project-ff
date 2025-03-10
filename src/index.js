@@ -65,29 +65,58 @@ const validationConfig = {
 
 // Функции
 function openModalImage({ target }) {
-  openModal(popupTypeImage);
   popupImage.src = target.src;
   popupImageCaption.textContent = target.alt;
+  openModal(popupTypeImage);
 }
 
 function openProfileModal() {
   nameProfileInput.value = profileTitle.textContent;
   jobProfileInput.value = profileDescription.textContent;
+  popupProfile.querySelector(".popup__button").dataset.loader = "ready-to-download";
   openModal(popupProfile);
   clearValidation(profileFormElement, validationConfig);
 }
 
 function openAvatarModal() {
+  popupEditAvatar.querySelector(".popup__button").dataset.loader = "ready-to-download";
   openModal(popupEditAvatar);
 }
 
 function openModalDeleteCard(event) {
+     const deletedStateElements = document.querySelectorAll("[data-state]");
+    deletedStateElements.forEach((element) => {
+      delete element.dataset.state;
+    });
   event.target.parentElement.dataset.state = "deleted";
+  deleteCardModal.querySelector(".popup__button").dataset.loader = "ready-to-download";
   openModal(deleteCardModal);
 }
 
 function resetForm(form) {
   form.reset();
+}
+
+
+
+function getCardIdForDelete(response1, response2) {
+  const cards = cardList.querySelectorAll(".places__item");
+  let index = 0;
+      for (const cardData of response2) {
+        if (
+          !!(
+            (response1._id === cardData.owner._id) &
+            (cards[index].dataset.id === cardData._id) &
+            (cards[index].dataset.state === "deleted")
+          )
+        ) {
+          deleteCard(cardData._id);
+          removeCardFromList(cards[index]);
+          break;
+        } else {
+          index++;
+        }
+      }
 }
 
 function handleProfileFormSubmit(event) {
@@ -138,32 +167,16 @@ function handleNewPlaceFormSubmit(event) {
 function handleDeleteCardFormSubmit(event) {
   event.preventDefault();
   renderLoading(true);
-  const cards = cardList.querySelectorAll(".places__item");
   Promise.all([getUserInfo(), getInitialCards()])
     .then(([response1, response2]) => {
-      let index = 0;
-      for (const cardData of response2) {
-        if (
-          !!(
-            (response1._id === cardData.owner._id) &
-            (cards[index].dataset.id === cardData._id) &
-            (cards[index].dataset.state === "deleted")
-          )
-        ) {
-          deleteCard(cardData._id);
-          removeCardFromList(cards[index]);
-          closeModal(deleteCardModal);
-          break;
-        } else {
-          index++;
-        }
-      }
+      getCardIdForDelete(response1, response2)
     })
     .catch((err) => {
       console.log(err);
     })
     .finally(() => {
       renderLoading(false);
+      closeModal(deleteCardModal);
     });
 }
 
@@ -186,6 +199,7 @@ function handleEditAvatarFormSubmit(event) {
 
 function renderLoading(isLoading) {
   const animatedElement = document.querySelector("[data-loader]");
+  console.log(animatedElement)
   const ellipsis = document.createElement("span");
   ellipsis.className = "loading-indicator";
   ellipsis.textContent = "...";
@@ -214,8 +228,6 @@ function renderLoading(isLoading) {
     ellipsis.classList.remove("popup__button-loading");
     animatedElement.textContent = "Да";
     delete animatedElement.dataset.loader;
-    animatedElement.classList.add("popup__button_disabled");
-    animatedElement.disabled = true;
     ellipsis.remove();
   }
 }
@@ -223,6 +235,7 @@ function renderLoading(isLoading) {
 // Обработчики событий
 profileAddButton.addEventListener("click", function () {
   resetForm(newPlaceFormElement);
+  popupCard.querySelector(".popup__button").dataset.loader = "ready-to-download";
   openModal(popupCard);
   clearValidation(newPlaceFormElement, validationConfig);
   setEventListeners(newPlaceFormElement);

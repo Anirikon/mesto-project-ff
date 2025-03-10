@@ -71,7 +71,9 @@ export const deleteCard = (cardId) => {
       return res.json();
     }
     return Promise.reject(`Ошибка: ${res.status}`);
-  });
+  }).catch((err) => {
+    console.log(err)
+  })
 };
 
 export const addLike = (cardId) => {

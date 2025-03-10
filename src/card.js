@@ -32,7 +32,7 @@ export function createCard(
   }
 
   if (likes.length !== 0) {
-    likeButtonContainer.setAttribute('style', "display: flex; gap: 3px");
+    likeButtonContainer.setAttribute("style", "display: flex; gap: 3px");
     likesCounter.textContent = likes.length;
   }
 
@@ -55,13 +55,15 @@ export function toggleLike(event) {
   const likeCounter = event.target
     .closest(".card__like")
     .querySelector(".card__like-counter");
-    console.log(event.target)
+  console.log(event.target);
 
   if (event.target.classList.value === "card__like-button") {
     addLike(event.target.closest("[data-id]").dataset.id).then((result) => {
       likeCounter.textContent = result.likes.length;
       if (result.likes.length !== 0) {
-        event.target.closest('.card__like').setAttribute('style', "display: flex; gap: 3px");
+        event.target
+          .closest(".card__like")
+          .setAttribute("style", "display: flex; gap: 3px");
       }
     });
     event.target.classList.add("card__like-button_is-active");

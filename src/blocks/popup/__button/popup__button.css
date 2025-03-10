@@ -19,6 +19,37 @@
   cursor: pointer;
 }
 
+.popup__button_disabled {
+  color: #C4C4C4;
+  background: white;
+  border: 1px solid #C4C4C4;
+}
+
+.popup__button_disabled:hover {
+  background: none;
+  cursor: default;
+}
+
+.popup_type_delete-card .popup__button {
+ margin-top: 38px;
+}
+
+.loading-indicator {
+  display: none;
+}
+
+.popup__button-loading {
+    display: inline-block;
+    clip-path: inset(0 3ch 0 0);
+    animation: l 1s steps(4) infinite;
+}
+
+@keyframes l {
+  to {
+    clip-path: inset(0 -1ch 0 0)
+  }
+}
+
 @media screen and (max-width: 568px) {
   .popup__button {
     font-size: 14px;

@@ -16,14 +16,16 @@ export function createCard(
   const cardTitle = cardElement.querySelector(".card__title");
   const deleteButton = cardElement.querySelector(".card__delete-button");
   const likeButton = cardElement.querySelector(".card__like-button");
-  const likesCounter = cardElement.querySelector(".card__like-counter");
+  const likeCounter = cardElement.querySelector(".card__like-counter");
   cardImage.src = cardData.link;
   cardTitle.textContent = cardData.name;
   cardImage.alt = cardData.name;
   cardElement.dataset.id = cardId;
 
   cardImage.addEventListener("click", openModalImage);
-  likeButton.addEventListener("click", toggleLike);
+  likeButton.addEventListener("click", function () {
+    toggleLike(likeButton, likeCounter);
+  });
   if (userId === ownerId) {
     deleteButton.addEventListener("click", openModalDeleteCard);
   } else if (userId || ownerId === undefined) {
@@ -31,7 +33,7 @@ export function createCard(
   }
 
   if (likes.length !== 0) {
-    likesCounter.textContent = likes.length;
+    likeCounter.textContent = likes.length;
   }
 
   likes.forEach((element) => {
@@ -49,25 +51,23 @@ export function removeCardFromList(cardElement) {
 }
 
 // @todo: Функция обработчика лайка
-export function toggleLike(event) {
-  const likeCounter = event.target
-    .closest(".card__like")
-    .querySelector(".card__like-counter");
-  if (event.target.classList.value === "card__like-button") {
-    addLike(event.target.closest("[data-id]").dataset.id).then((result) => {
+export function toggleLike(likeButton, likeCounter) {
+  if (likeButton.classList.value === "card__like-button") {
+    console.log(likeButton.closest("[data-id]").dataset.id);
+    addLike(likeButton.closest("[data-id]").dataset.id).then((result) => {
       likeCounter.textContent = result.likes.length;
     });
-    event.target.classList.add("card__like-button_is-active");
+    likeButton.classList.add("card__like-button_is-active");
   } else if (
-    event.target.classList.value ===
+    likeButton.classList.value ===
     "card__like-button card__like-button_is-active"
   ) {
-    removeLike(event.target.closest("[data-id]").dataset.id).then((result) => {
+    removeLike(likeButton.closest("[data-id]").dataset.id).then((result) => {
       likeCounter.textContent = result.likes.length;
       if (result.likes.length == 0) {
         likeCounter.textContent = "";
       }
     });
-    event.target.classList.remove("card__like-button_is-active");
+    likeButton.classList.remove("card__like-button_is-active");
   }
 }

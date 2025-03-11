@@ -54,20 +54,28 @@ export function removeCardFromList(cardElement) {
 export function toggleLike(likeButton, likeCounter) {
   if (likeButton.classList.value === "card__like-button") {
     console.log(likeButton.closest("[data-id]").dataset.id);
-    addLike(likeButton.closest("[data-id]").dataset.id).then((result) => {
-      likeCounter.textContent = result.likes.length;
-    });
-    likeButton.classList.add("card__like-button_is-active");
+    addLike(likeButton.closest("[data-id]").dataset.id)
+      .then((result) => {
+        likeCounter.textContent = result.likes.length;
+        likeButton.classList.add("card__like-button_is-active");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } else if (
     likeButton.classList.value ===
     "card__like-button card__like-button_is-active"
   ) {
-    removeLike(likeButton.closest("[data-id]").dataset.id).then((result) => {
-      likeCounter.textContent = result.likes.length;
-      if (result.likes.length == 0) {
-        likeCounter.textContent = "";
-      }
-    });
-    likeButton.classList.remove("card__like-button_is-active");
+    removeLike(likeButton.closest("[data-id]").dataset.id)
+      .then((result) => {
+        likeCounter.textContent = result.likes.length;
+        likeButton.classList.remove("card__like-button_is-active");
+        if (result.likes.length == 0) {
+          likeCounter.textContent = "";
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 }

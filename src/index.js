@@ -2,11 +2,7 @@
 import "./pages/index.css";
 import { openModal, closeModal, closePopupOnBackground } from "./modal.js";
 import { createCard, toggleLike, removeCardFromList } from "./card.js";
-import {
-  enableValidation,
-  clearValidation,
-  setEventListeners,
-} from "./validation.js";
+import { enableValidation, clearValidation } from "./validation.js";
 import {
   getUserInfo,
   getInitialCards,
@@ -75,11 +71,29 @@ function openProfileModal() {
   jobProfileInput.value = profileDescription.textContent;
   popupProfile.querySelector(".popup__button").dataset.loader =
     "ready-to-download";
-  openModal(popupProfile);
+  popupProfile
+    .querySelector(".popup__button")
+    .classList.add("popup__button_disabled");
+  popupProfile.disable = true;
   clearValidation(profileFormElement, validationConfig);
+  openModal(popupProfile);
+}
+
+function openNewPlaceModal() {
+  resetForm(newPlaceFormElement);
+  clearValidation(newPlaceFormElement, validationConfig);
+  popupCard.querySelector(".popup__button").dataset.loader =
+    "ready-to-download";
+  openModal(popupCard);
 }
 
 function openAvatarModal() {
+  resetForm(editAvatarForm);
+  clearValidation(editAvatarForm, validationConfig);
+  popupEditAvatar
+    .querySelector(".popup__button")
+    .classList.add("popup__button_disabled");
+  popupEditAvatar.querySelector(".popup__button").disable = true;
   popupEditAvatar.querySelector(".popup__button").dataset.loader =
     "ready-to-download";
   openModal(popupEditAvatar);
@@ -127,13 +141,13 @@ function handleProfileFormSubmit(event) {
     .then((result) => {
       profileTitle.textContent = result.name;
       profileDescription.textContent = result.about;
+      closeModal(popupProfile);
     })
     .catch((err) => {
       console.log(err);
     })
     .finally(() => {
       renderLoading(false);
-      closeModal(popupProfile);
     });
 }
 
@@ -141,27 +155,26 @@ function handleNewPlaceFormSubmit(event) {
   event.preventDefault();
   renderLoading(true);
   const cardData = { name: placeName.value, link: link.value };
-  Promise.all([getUserInfo(), addNewCard(placeName.value, link.value)])
-    .then(([response1, response2]) => {
+  addNewCard(placeName.value, link.value)
+    .then((newCardData) => {
       const cardElement = createCard(
         cardData,
-        response1._id,
-        response2._id,
-        response2.owner._id,
-        response2.likes,
+        newCardData.owner._id,
+        newCardData._id,
+        newCardData.owner._id,
+        newCardData.likes,
         toggleLike,
         openModalImage,
         openModalDeleteCard
       );
       cardList.prepend(cardElement);
+      closeModal(popupCard);
     })
     .catch((err) => {
       console.log(err);
     })
     .finally(() => {
       renderLoading(false);
-      closeModal(popupCard);
-      resetForm(newPlaceFormElement);
     });
 }
 
@@ -169,15 +182,15 @@ function handleDeleteCardFormSubmit(event) {
   event.preventDefault();
   renderLoading(true);
   Promise.all([getUserInfo(), getInitialCards()])
-    .then(([response1, response2]) => {
-      getCardIdForDelete(response1, response2);
+    .then(([userInfo, initialCards]) => {
+      getCardIdForDelete(userInfo, initialCards);
+      closeModal(deleteCardModal);
     })
     .catch((err) => {
       console.log(err);
     })
     .finally(() => {
       renderLoading(false);
-      closeModal(deleteCardModal);
     });
 }
 
@@ -187,14 +200,13 @@ function handleEditAvatarFormSubmit(event) {
   updateAvatar(avatarFormInput.value)
     .then((response) => {
       profileImage.style.backgroundImage = `url(${response.avatar})`;
+      closeModal(popupEditAvatar);
     })
     .catch((err) => {
       console.log(err);
     })
     .finally(() => {
       renderLoading(false);
-      closeModal(popupEditAvatar);
-      resetForm(editAvatarForm);
     });
 }
 
@@ -204,10 +216,14 @@ function renderLoading(isLoading) {
   ellipsis.className = "loading-indicator";
   ellipsis.textContent = "...";
   if (isLoading & (animatedElement.textContent === "Сохранить")) {
+    animatedElement.disabled = true;
+    animatedElement.classList.add("popup__button_disabled");
     animatedElement.textContent = "Сохранение";
     animatedElement.append(ellipsis);
     ellipsis.classList.add("popup__button-loading");
   } else if (isLoading & (animatedElement.textContent === "Да")) {
+    animatedElement.disabled = true;
+    animatedElement.classList.add("popup__button_disabled");
     animatedElement.textContent = "Удаление";
     animatedElement.append(ellipsis);
     ellipsis.classList.add("popup__button-loading");
@@ -218,9 +234,9 @@ function renderLoading(isLoading) {
     ellipsis.classList.remove("popup__button-loading");
     animatedElement.textContent = "Сохранить";
     delete animatedElement.dataset.loader;
-    animatedElement.classList.add("popup__button_disabled");
-    animatedElement.disabled = true;
     ellipsis.remove();
+    animatedElement.disabled = false;
+    animatedElement.classList.remove("popup__button_disabled");
   } else if (
     (isLoading === false) &
     (animatedElement.textContent === "Удаление...")
@@ -229,18 +245,13 @@ function renderLoading(isLoading) {
     animatedElement.textContent = "Да";
     delete animatedElement.dataset.loader;
     ellipsis.remove();
+    animatedElement.disabled = false;
+    animatedElement.classList.remove("popup__button_disabled");
   }
 }
 
 // Обработчики событий
-profileAddButton.addEventListener("click", function () {
-  resetForm(newPlaceFormElement);
-  popupCard.querySelector(".popup__button").dataset.loader =
-    "ready-to-download";
-  openModal(popupCard);
-  clearValidation(newPlaceFormElement, validationConfig);
-  setEventListeners(newPlaceFormElement);
-});
+profileAddButton.addEventListener("click", openNewPlaceModal);
 
 popupProfileEditButton.addEventListener("click", openProfileModal);
 
@@ -267,14 +278,14 @@ enableValidation(validationConfig);
 
 // Инициализация загрузки данных с сервера на страницу
 Promise.all([getUserInfo(), getInitialCards()])
-  .then(([response1, response2]) => {
-    profileImage.style.backgroundImage = `url(${response1.avatar})`;
-    profileTitle.textContent = response1.name;
-    profileDescription.textContent = response1.about;
-    response2.forEach((cardData) => {
+  .then(([userInfo, initialCards]) => {
+    profileImage.style.backgroundImage = `url(${userInfo.avatar})`;
+    profileTitle.textContent = userInfo.name;
+    profileDescription.textContent = userInfo.about;
+    initialCards.forEach((cardData) => {
       const cardElement = createCard(
         cardData,
-        response1._id,
+        userInfo._id,
         cardData._id,
         cardData.owner._id,
         cardData.likes,

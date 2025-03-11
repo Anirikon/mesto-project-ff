@@ -4,6 +4,7 @@ export function enableValidation(validationConfig) {
     document.querySelectorAll(validationConfig.formSelector)
   );
   formList.forEach((formElement) => {
+    console.log(formElement)
     setEventListeners(formElement);
   });
 }

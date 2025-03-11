@@ -15,7 +15,6 @@ export function createCard(
   const cardImage = cardElement.querySelector(".card__image");
   const cardTitle = cardElement.querySelector(".card__title");
   const deleteButton = cardElement.querySelector(".card__delete-button");
-  const likeButtonContainer = cardElement.querySelector(".card__like");
   const likeButton = cardElement.querySelector(".card__like-button");
   const likesCounter = cardElement.querySelector(".card__like-counter");
   cardImage.src = cardData.link;
@@ -28,11 +27,10 @@ export function createCard(
   if (userId === ownerId) {
     deleteButton.addEventListener("click", openModalDeleteCard);
   } else if (userId || ownerId === undefined) {
-    deleteButton.style.display = "none";
+    deleteButton.remove();
   }
 
   if (likes.length !== 0) {
-    likeButtonContainer.setAttribute("style", "display: flex; gap: 3px");
     likesCounter.textContent = likes.length;
   }
 
@@ -58,11 +56,6 @@ export function toggleLike(event) {
   if (event.target.classList.value === "card__like-button") {
     addLike(event.target.closest("[data-id]").dataset.id).then((result) => {
       likeCounter.textContent = result.likes.length;
-      if (result.likes.length !== 0) {
-        event.target
-          .closest(".card__like")
-          .setAttribute("style", "display: flex; gap: 3px");
-      }
     });
     event.target.classList.add("card__like-button_is-active");
   } else if (
@@ -72,7 +65,7 @@ export function toggleLike(event) {
     removeLike(event.target.closest("[data-id]").dataset.id).then((result) => {
       likeCounter.textContent = result.likes.length;
       if (result.likes.length == 0) {
-        likeCounter.textContent = " ";
+        likeCounter.textContent = "";
       }
     });
     event.target.classList.remove("card__like-button_is-active");

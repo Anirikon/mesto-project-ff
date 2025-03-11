@@ -74,6 +74,7 @@ function openProfileModal() {
   popupProfile
     .querySelector(".popup__button")
     .classList.add("popup__button_disabled");
+    popupProfile.disable = true
   clearValidation(profileFormElement, validationConfig);
   openModal(popupProfile);
 }

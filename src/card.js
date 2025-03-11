@@ -53,7 +53,6 @@ export function removeCardFromList(cardElement) {
 // @todo: Функция обработчика лайка
 export function toggleLike(likeButton, likeCounter) {
   if (likeButton.classList.value === "card__like-button") {
-    console.log(likeButton.closest("[data-id]").dataset.id);
     addLike(likeButton.closest("[data-id]").dataset.id)
       .then((result) => {
         likeCounter.textContent = result.likes.length;

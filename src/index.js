@@ -1,8 +1,8 @@
-// Импорт/экспорт
+// Импорт
 import "./pages/index.css";
 import { openModal, closeModal, closePopupOnBackground } from "./modal.js";
 import { createCard, toggleLike, removeCardFromList } from "./card.js";
-import { enableValidation, clearValidation } from "./validation.js";
+import { enableValidation, clearValidation, toggleButtonState } from "./validation.js";
 import {
   getUserInfo,
   getInitialCards,
@@ -67,6 +67,7 @@ function openModalImage({ target }) {
 }
 
 function openProfileModal() {
+  resetForm(profileFormElement);
   nameProfileInput.value = profileTitle.textContent;
   jobProfileInput.value = profileDescription.textContent;
   popupProfile.querySelector(".popup__button").dataset.loader =
@@ -74,7 +75,7 @@ function openProfileModal() {
   popupProfile
     .querySelector(".popup__button")
     .classList.add("popup__button_disabled");
-  popupProfile.disable = true;
+  popupProfile.querySelector(".popup__button").disabled = true;
   clearValidation(profileFormElement, validationConfig);
   openModal(popupProfile);
 }
@@ -84,18 +85,22 @@ function openNewPlaceModal() {
   clearValidation(newPlaceFormElement, validationConfig);
   popupCard.querySelector(".popup__button").dataset.loader =
     "ready-to-download";
+    popupCard
+    .querySelector(".popup__button")
+    .classList.add("popup__button_disabled");
+    popupCard.querySelector(".popup__button").disabled = true;
   openModal(popupCard);
 }
 
 function openAvatarModal() {
   resetForm(editAvatarForm);
   clearValidation(editAvatarForm, validationConfig);
+  popupEditAvatar.querySelector(".popup__button").dataset.loader =
+    "ready-to-download";
   popupEditAvatar
     .querySelector(".popup__button")
     .classList.add("popup__button_disabled");
-  popupEditAvatar.querySelector(".popup__button").disable = true;
-  popupEditAvatar.querySelector(".popup__button").dataset.loader =
-    "ready-to-download";
+  popupEditAvatar.querySelector(".popup__button").disabled = true;
   openModal(popupEditAvatar);
 }
 
@@ -111,6 +116,9 @@ function openModalDeleteCard(event) {
 }
 
 function resetForm(form) {
+  document.querySelectorAll(".popup__button").forEach((button) => {
+    button.removeAttribute("data-loader");
+  });
   form.reset();
 }
 
@@ -235,8 +243,6 @@ function renderLoading(isLoading) {
     animatedElement.textContent = "Сохранить";
     delete animatedElement.dataset.loader;
     ellipsis.remove();
-    animatedElement.disabled = false;
-    animatedElement.classList.remove("popup__button_disabled");
   } else if (
     (isLoading === false) &
     (animatedElement.textContent === "Удаление...")

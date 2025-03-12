@@ -51,9 +51,6 @@ export const deleteCard = (cardId) => {
     method: "DELETE",
     headers: config.headers,
   }).then(requestVerification)
-    .catch((err) => {
-      console.log(err);
-    });
 };
 
 export const addLike = (cardId) => {

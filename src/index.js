@@ -2,7 +2,7 @@
 import "./pages/index.css";
 import { openModal, closeModal, closePopupOnBackground } from "./modal.js";
 import { createCard, toggleLike, removeCardFromList } from "./card.js";
-import { enableValidation, clearValidation, toggleButtonState } from "./validation.js";
+import { enableValidation, clearValidation } from "./validation.js";
 import {
   getUserInfo,
   getInitialCards,
@@ -85,10 +85,10 @@ function openNewPlaceModal() {
   clearValidation(newPlaceFormElement, validationConfig);
   popupCard.querySelector(".popup__button").dataset.loader =
     "ready-to-download";
-    popupCard
+  popupCard
     .querySelector(".popup__button")
     .classList.add("popup__button_disabled");
-    popupCard.querySelector(".popup__button").disabled = true;
+  popupCard.querySelector(".popup__button").disabled = true;
   openModal(popupCard);
 }
 
@@ -104,15 +104,25 @@ function openAvatarModal() {
   openModal(popupEditAvatar);
 }
 
-function openModalDeleteCard(event) {
-  const deletedStateElements = document.querySelectorAll("[data-state]");
-  deletedStateElements.forEach((element) => {
-    delete element.dataset.state;
-  });
-  event.target.parentElement.dataset.state = "deleted";
-  deleteCardModal.querySelector(".popup__button").dataset.loader =
+function openModalDeleteCard(cardId, cardElement) {
+  deleteCardForm.querySelector(".popup__button").dataset.loader =
     "ready-to-download";
   openModal(deleteCardModal);
+  deleteCardForm.onsubmit = (event) => {
+    renderLoading(true);
+    event.preventDefault();
+    deleteCard(cardId)
+      .then(() => {
+        removeCardFromList(cardElement);
+        closeModal(deleteCardModal);
+      })
+      .catch((err) => {
+        console.error("Ошибка при удалении карточки:", err);
+      })
+      .finally(() => {
+        renderLoading(false);
+      });
+  };
 }
 
 function resetForm(form) {
@@ -120,26 +130,6 @@ function resetForm(form) {
     button.removeAttribute("data-loader");
   });
   form.reset();
-}
-
-function getCardIdForDelete(response1, response2) {
-  const cards = cardList.querySelectorAll(".places__item");
-  let index = 0;
-  for (const cardData of response2) {
-    if (
-      !!(
-        (response1._id === cardData.owner._id) &
-        (cards[index].dataset.id === cardData._id) &
-        (cards[index].dataset.state === "deleted")
-      )
-    ) {
-      deleteCard(cardData._id);
-      removeCardFromList(cards[index]);
-      break;
-    } else {
-      index++;
-    }
-  }
 }
 
 function handleProfileFormSubmit(event) {
@@ -152,7 +142,7 @@ function handleProfileFormSubmit(event) {
       closeModal(popupProfile);
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Ошибка при сохранении данных профиля:", err);
     })
     .finally(() => {
       renderLoading(false);
@@ -179,23 +169,7 @@ function handleNewPlaceFormSubmit(event) {
       closeModal(popupCard);
     })
     .catch((err) => {
-      console.log(err);
-    })
-    .finally(() => {
-      renderLoading(false);
-    });
-}
-
-function handleDeleteCardFormSubmit(event) {
-  event.preventDefault();
-  renderLoading(true);
-  Promise.all([getUserInfo(), getInitialCards()])
-    .then(([userInfo, initialCards]) => {
-      getCardIdForDelete(userInfo, initialCards);
-      closeModal(deleteCardModal);
-    })
-    .catch((err) => {
-      console.log(err);
+      console.error("Ошибка при сохранении новой карточки:", err);
     })
     .finally(() => {
       renderLoading(false);
@@ -211,7 +185,7 @@ function handleEditAvatarFormSubmit(event) {
       closeModal(popupEditAvatar);
     })
     .catch((err) => {
-      console.log(err);
+      console.error("Ошибка при сохранении аватара:", err);
     })
     .finally(() => {
       renderLoading(false);
@@ -265,8 +239,6 @@ profileFormElement.addEventListener("submit", handleProfileFormSubmit);
 
 newPlaceFormElement.addEventListener("submit", handleNewPlaceFormSubmit);
 
-deleteCardForm.addEventListener("submit", handleDeleteCardFormSubmit);
-
 editAvatarForm.addEventListener("submit", handleEditAvatarFormSubmit);
 
 profileEditImage.addEventListener("click", openAvatarModal);
@@ -303,5 +275,5 @@ Promise.all([getUserInfo(), getInitialCards()])
     });
   })
   .catch((err) => {
-    console.log(err);
+    console.error("Ошибка при загрузке информации о пользователе или информации о карточках:", err);
   });

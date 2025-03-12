@@ -51,7 +51,7 @@ function hasInvalidInput(inputList) {
   });
 }
 
-export function toggleButtonState(inputList, buttonElement, validationConfig) {
+function toggleButtonState(inputList, buttonElement, validationConfig) {
   if (hasInvalidInput(inputList)) {
     buttonElement.disabled = true;
     buttonElement.classList.add(validationConfig.inactiveButtonClass);

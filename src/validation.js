@@ -30,15 +30,10 @@ function showInputError(
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   errorElement.classList.add(validationConfig.errorClass);
   inputElement.classList.add(validationConfig.inputErrorClass);
-  if (
-    inputElement.validity.typeMismatch ||
-    inputElement.validity.valueMissing
-  ) {
-    errorElement.textContent = errorMessage;
-  } else if (inputElement.validity.patternMismatch) {
+  if (inputElement.validity.patternMismatch) {
     const attrError = inputElement.dataset.errorMessage;
     errorElement.textContent = attrError;
-  } else if (inputElement.validity.tooShort) {
+  } else {
     errorElement.textContent = errorMessage;
   }
 }

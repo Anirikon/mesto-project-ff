@@ -27,7 +27,9 @@ export function createCard(
     toggleLike(likeButton, likeCounter);
   });
   if (userId === ownerId) {
-    deleteButton.addEventListener("click", openModalDeleteCard);
+    deleteButton.addEventListener("click", () => {
+      openModalDeleteCard(cardId, cardElement)
+    });
   } else if (userId || ownerId === undefined) {
     deleteButton.remove();
   }
@@ -59,7 +61,7 @@ export function toggleLike(likeButton, likeCounter) {
         likeButton.classList.add("card__like-button_is-active");
       })
       .catch((err) => {
-        console.log(err);
+        console.error("Ошибка при добавлении лайка:", err);
       });
   } else if (
     likeButton.classList.value ===
@@ -74,7 +76,7 @@ export function toggleLike(likeButton, likeCounter) {
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error("Ошибка при удалении лайка:", err);
       });
   }
 }
